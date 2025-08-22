@@ -1,9 +1,9 @@
-# Reddit to Telegram Bot
+# Reddit to Telegram Image Bot
 
-A simple bot that automatically forwards posts from a Reddit user to a Telegram chat.
+A bot that automatically forwards images from Reddit to Telegram.
 
-## Setup
+## Deployment on Railway
 
-1. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
+1. Connect GitHub repository
+2. Set environment variables in Railway dashboard
+3. Automatic deployment
