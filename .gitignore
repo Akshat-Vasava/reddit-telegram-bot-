@@ -1,0 +1,5 @@
+.env
+.env.local
+*.log
+temp_*.jpg
+__pycache__/
