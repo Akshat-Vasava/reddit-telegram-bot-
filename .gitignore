@@ -1,8 +1,7 @@
-# Ignore actual data files (add these lines)
-data/processed_posts.txt
-logs/*.log
 .env
 .env.local
 *.log
 temp_*.jpg
 __pycache__/
+logs/*
+data/*
