@@ -1,3 +1,6 @@
+# Ignore actual data files (add these lines)
+data/processed_posts.txt
+logs/*.log
 .env
 .env.local
 *.log
