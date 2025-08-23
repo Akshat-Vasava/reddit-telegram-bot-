@@ -7,6 +7,22 @@ import praw
 import telebot
 from dotenv import load_dotenv
 
+# DEBUG: Print all environment variables
+print("=== ENVIRONMENT VARIABLES ===")
+print(f"TELEGRAM_BOT_TOKEN: {os.getenv('TELEGRAM_BOT_TOKEN')}")
+print(f"TELEGRAM_CHAT_ID: {os.getenv('TELEGRAM_CHAT_ID')}")
+print(f"REDDIT_CLIENT_ID: {os.getenv('REDDIT_CLIENT_ID')}")
+print(f"REDDIT_CLIENT_SECRET: {os.getenv('REDDIT_CLIENT_SECRET')}")
+print(f"REDDIT_USER_AGENT: {os.getenv('REDDIT_USER_AGENT')}")
+
+# Check if variables exist
+print("=== VARIABLE EXISTENCE ===")
+print(f"TELEGRAM_BOT_TOKEN exists: {bool(os.getenv('TELEGRAM_BOT_TOKEN'))}")
+print(f"TELEGRAM_CHAT_ID exists: {bool(os.getenv('TELEGRAM_CHAT_ID'))}")
+print(f"REDDIT_CLIENT_ID exists: {bool(os.getenv('REDDIT_CLIENT_ID'))}")
+print(f"REDDIT_CLIENT_SECRET exists: {bool(os.getenv('REDDIT_CLIENT_SECRET'))}")
+print(f"REDDIT_USER_AGENT exists: {bool(os.getenv('REDDIT_USER_AGENT'))}")
+
 # Load environment variables
 load_dotenv()
 
@@ -209,4 +225,5 @@ def main():
         logger.info("Bot shutdown complete")
 
 if __name__ == "__main__":
+
     main()
