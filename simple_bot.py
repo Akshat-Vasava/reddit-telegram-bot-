@@ -5,33 +5,24 @@ import requests
 from datetime import datetime, timezone
 import praw
 import telebot
-from dotenv import load_dotenv
+from telebot.apihelper import ApiException
 
-# DEBUG: Print all environment variables
-print("=== ENVIRONMENT VARIABLES ===")
-print(f"TELEGRAM_BOT_TOKEN: {os.getenv('TELEGRAM_BOT_TOKEN')}")
-print(f"TELEGRAM_CHAT_ID: {os.getenv('TELEGRAM_CHAT_ID')}")
-print(f"REDDIT_CLIENT_ID: {os.getenv('REDDIT_CLIENT_ID')}")
-print(f"REDDIT_CLIENT_SECRET: {os.getenv('REDDIT_CLIENT_SECRET')}")
-print(f"REDDIT_USER_AGENT: {os.getenv('REDDIT_USER_AGENT')}")
-
-# Check if variables exist
-print("=== VARIABLE EXISTENCE ===")
-print(f"TELEGRAM_BOT_TOKEN exists: {bool(os.getenv('TELEGRAM_BOT_TOKEN'))}")
-print(f"TELEGRAM_CHAT_ID exists: {bool(os.getenv('TELEGRAM_CHAT_ID'))}")
-print(f"REDDIT_CLIENT_ID exists: {bool(os.getenv('REDDIT_CLIENT_ID'))}")
-print(f"REDDIT_CLIENT_SECRET exists: {bool(os.getenv('REDDIT_CLIENT_SECRET'))}")
-print(f"REDDIT_USER_AGENT exists: {bool(os.getenv('REDDIT_USER_AGENT'))}")
-
-# Load environment variables
-load_dotenv()
+# Koyeb-specific setup
+if 'KOYEB' in os.environ or 'KOYEB_APP' in os.environ:
+    print("🚀 Running on Koyeb...")
+    # Koyeb handles environment variables automatically
+else:
+    # Local development - load from .env file
+    from dotenv import load_dotenv
+    load_dotenv()
+    print("💻 Running locally...")
 
 # Configuration
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 REDDIT_CLIENT_ID = os.getenv('REDDIT_CLIENT_ID')
 REDDIT_CLIENT_SECRET = os.getenv('REDDIT_CLIENT_SECRET')
-REDDIT_USER_AGENT = os.getenv('REDDIT_USER_AGENT')
+REDDIT_USER_AGENT = os.getenv('REDDIT_USER_AGENT', 'my-bot')
 REDDIT_TARGET_USER = "ClashDotNinja"
 CHECK_INTERVAL = int(os.getenv('CHECK_INTERVAL', 300))
 MAX_POSTS_PER_CHECK = int(os.getenv('MAX_POSTS_PER_CHECK', 10))
@@ -43,8 +34,7 @@ required_vars = [
     ('TELEGRAM_BOT_TOKEN', TELEGRAM_BOT_TOKEN),
     ('TELEGRAM_CHAT_ID', TELEGRAM_CHAT_ID),
     ('REDDIT_CLIENT_ID', REDDIT_CLIENT_ID),
-    ('REDDIT_CLIENT_SECRET', REDDIT_CLIENT_SECRET),
-    ('REDDIT_USER_AGENT', REDDIT_USER_AGENT)
+    ('REDDIT_CLIENT_SECRET', REDDIT_CLIENT_SECRET)
 ]
 
 missing_vars = [var for var, value in required_vars if not value]
@@ -123,7 +113,7 @@ def send_image_to_telegram(image_path):
             )
         logger.info("Image sent to Telegram successfully")
         return True
-    except Exception as e:
+    except ApiException as e:
         logger.error(f"Failed to send image to Telegram: {e}")
         return False
 
@@ -211,9 +201,19 @@ def main():
     """Main function to run the bot"""
     logger.info("Starting Image-Only Reddit to Telegram bot...")
     
+    # Debug: Print environment info
+    logger.info(f"Target user: u/{REDDIT_TARGET_USER}")
+    logger.info(f"Check interval: {CHECK_INTERVAL} seconds")
+    logger.info(f"Max posts per check: {MAX_POSTS_PER_CHECK}")
+    
     try:
         while True:
-            check_and_forward_posts()
+            posts_processed = check_and_forward_posts()
+            if posts_processed > 0:
+                logger.info(f"✅ Successfully processed {posts_processed} new posts")
+            else:
+                logger.info("⏭️  No new posts found")
+                
             logger.info(f"Next check in {CHECK_INTERVAL} seconds...")
             time.sleep(CHECK_INTERVAL)
             
@@ -221,9 +221,12 @@ def main():
         logger.info("Bot stopped by user")
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
+        logger.info("Restarting in 60 seconds...")
+        time.sleep(60)
+        # Auto-restart on critical failure
+        main()
     finally:
         logger.info("Bot shutdown complete")
 
 if __name__ == "__main__":
-
     main()
