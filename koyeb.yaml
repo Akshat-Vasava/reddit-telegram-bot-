@@ -1,0 +1,23 @@
+version: 1
+name: reddit-telegram-bot
+services:
+  - name: bot-worker
+    image: koyeb/app:reddit-telegram-bot
+    ports:
+      - port: 3000
+        protocol: http
+    env:
+      - name: TELEGRAM_BOT_TOKEN
+        secret: telegram-bot-token
+      - name: TELEGRAM_CHAT_ID
+        secret: telegram-chat-id
+      - name: REDDIT_CLIENT_ID
+        secret: reddit-client-id
+      - name: REDDIT_CLIENT_SECRET
+        secret: reddit-client-secret
+      - name: REDDIT_USER_AGENT
+        value: "my-bot"
+      - name: CHECK_INTERVAL
+        value: "300"
+      - name: MAX_POSTS_PER_CHECK
+        value: "10"
